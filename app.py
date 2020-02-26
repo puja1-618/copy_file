@@ -2,10 +2,7 @@ import os
 import shutil
 from flask import Flask, request, render_template, url_for, redirect
 
-
-
 app = Flask(__name__)
-
 
 @app.route("/")
 def fileFrontPage():
@@ -13,16 +10,21 @@ def fileFrontPage():
 
 @app.route("/handleUpload", methods=['POST'])
 def handleFileUpload():
+    # get the destination path from the input text
+    if 'destination' in request.form:
+        des = request.form['destination']
+    # get the photo
     if 'photo' in request.files:
         photo = request.files['photo']
         if photo.filename != '':
-            photo.save(os.path.join(r"C:\Users\Public\Pictures", photo.filename))
+            # check the provided path exists or not
+            if os.path.exists(des):
+                # Save the photo to the destination folder and render the thankyou.html page
+                photo.save(os.path.join(des, photo.filename))
+                return render_template('thankyou.html')
+    # If destination path is empty or photo not provided
+    # It will render the same page
     return redirect(url_for('fileFrontPage'))
-def destination():
-    dst=data["destination"]
-    shutil.copy(r"C:\Users\Public\Pictures",dst)
-
-
 
 if __name__ == '__main__':
     app.run(debug=True)
